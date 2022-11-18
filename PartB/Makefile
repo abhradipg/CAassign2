@@ -23,8 +23,11 @@ data/input_4096.in: data/generate
 data/input_8192.in: data/generate
 	./data/generate 8192
 
-run_sim: data/input_16384.in cmm_sim
-	./cmm_sim data/input_16384.in
+data/input_16384.in: data/generate
+	./data/generate 16384
+
+run_sim: data/input_128.in cmm_sim
+	./cmm_sim data/input_128.in
 	
 run_server: data/input_128.in cmm_server
 	./cmm_server data/input_128.in
