@@ -9,9 +9,9 @@ __global__ void set0(int *c, int N){
 }
 
 __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
-    int rowC = blockIdx.y * blockDim.y + threadIdx.y;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
     int iter = blockIdx.x * blockDim.x + threadIdx.x;
-    int row=rowC<<1;
+    int rowC=row>>1;
     int a1=a[row * N + iter];
     int a2=a[(row+1) *N + iter];
     int temp;
@@ -46,7 +46,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     int BLOCKSY = (N>>1) / THREADS;
     dim3 threads(THREADS, THREADS);
     dim3 blocks1(BLOCKSY, BLOCKSY);
-    dim3 blocks2(BLOCKSX, BLOCKSY);
+    dim3 blocks2(BLOCKSX, BLOCKX);
     set0<<<blocks1,threads>>>(d_c, N);
     cudaDeviceSynchronize();
     
