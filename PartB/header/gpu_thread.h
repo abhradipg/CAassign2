@@ -14,7 +14,7 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int row=rowC<<1;
     int a1=a[row * N + iter];
     int a2=a[(row+1) *N + iter];
-    int temp,temp2,temp3,temp4;
+    int temp;
     for (int col = 0, colC=0; col < N; col+=2,colC++) {
         int2 b_temp1 = reinterpret_cast<int2*>(&b[iter * N + col])[0];
         temp=a1*b_temp1.x;
@@ -42,10 +42,10 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaMemcpy(d_b, matB, sizeA, cudaMemcpyHostToDevice);
 
     int THREADS = 32;
-    int BLOCKS = (N>>1) / THREADS;
-
-    dim3 threads(THREADS*2, THREADS);
-    dim3 blocks(BLOCKS/2, BLOCKS);
+    int BLOCKSX = (N) / THREADS;
+    int BLOCKSY = (N>>1) / THREADS;
+    dim3 threads(THREADS, THREADS);
+    dim3 blocks(BLOCKSX, BLOCKSY);
     
     set0<<<blocks,threads>>>(d_c, N);
     cudaDeviceSynchronize();
