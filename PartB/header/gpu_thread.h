@@ -2,7 +2,7 @@
 
 // Create other necessary functions here
 
-__global__ void matrixRedMul(const int *a, const int *b, int *c, int N) {
+__global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int rowC = blockIdx.y * blockDim.y + threadIdx.y;
     int colC = blockIdx.x * blockDim.x + threadIdx.x;
     int row=rowC<<1;
