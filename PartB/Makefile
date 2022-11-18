@@ -1,6 +1,6 @@
 sim: data/input_128.in cmm_sim
 
-server: data/input_128.in cmm_server
+server: data/input_128.in data/input_1024.in data/input_4096.in data/input_8192.in data/input_16384.in cmm_server
 
 cmm_server: main.cu header/gpu_thread.h
 	nvcc main.cu -o cmm_server -I ./header
@@ -14,8 +14,17 @@ data/generate: data/generate.cpp
 data/input_128.in: data/generate
 	./data/generate 128
 
-run_sim: data/input_128.in cmm_sim
-	./cmm_sim data/input_128.in
+data/input_1024.in: data/generate
+	./data/generate 1024
+
+data/input_4096.in: data/generate
+	./data/generate 4096
+
+data/input_8192.in: data/generate
+	./data/generate 8192
+
+run_sim: data/input_16384.in cmm_sim
+	./cmm_sim data/input_16384.in
 	
 run_server: data/input_128.in cmm_server
 	./cmm_server data/input_128.in
