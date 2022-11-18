@@ -7,7 +7,7 @@ __global__ void matrixRedMul(const int *a, const int *b, int *c, int N) {
     int colC = blockIdx.x * blockDim.x + threadIdx.x;
     int row=rowC<<1;
     int col=colC<<1;
-    temp=0
+    int temp=0
     for (int iter = 0; iter < (N>>1); iter++) {
        temp += a[row * N + iter] * b[iter * N + col];
        temp += a[(row+1) * N + iter] * b[iter * N + col];
