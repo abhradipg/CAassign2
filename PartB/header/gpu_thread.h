@@ -25,8 +25,8 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaMalloc(&d_b, sizeA);
     cudaMalloc(&d_c, sizeC);
   
-    cudaMemcpy(d_a, matA, bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_b, matB, bytes, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_a, matA, sizeA, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_b, matB, sizeA, cudaMemcpyHostToDevice);
 
     int THREADS = 32;
     int BLOCKS = N / THREADS;
@@ -34,9 +34,9 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS, BLOCKS);
 
-    matrixMul<<<blocks, threads>>>(d_a, d_b, d_c, N);
+    matrixRedMul<<<blocks, threads>>>(d_a, d_b, d_c, N);
 
-    cudaMemcpy(matC, d_c, bytes, cudaMemcpyDeviceToHost);
+    cudaMemcpy(matC, d_c, sizeC, cudaMemcpyDeviceToHost);
 
     cudaFree(d_a);
     cudaFree(d_b);
