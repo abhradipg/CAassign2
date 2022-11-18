@@ -16,7 +16,7 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
        int2 b_temp4 = reinterpret_cast<int2*>(&b[(iter+3) * N + col])[0];
 
        int4 a_temp1 = reinterpret_cast<int4*>(&a[row * N + iter])[0];
-       int4 a_temp2 = reinterpret_cast<int4*>(&a[(row+1) + iter])[0];
+       int4 a_temp2 = reinterpret_cast<int4*>(&a[(row+1) *N + iter])[0];
 
        temp += a_temp1.x * b_temp1.x;
        temp += a_temp1.x * b_temp1.y;
