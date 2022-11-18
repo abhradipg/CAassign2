@@ -45,12 +45,12 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     int BLOCKSX = (N) / THREADS;
     int BLOCKSY = (N>>1) / THREADS;
     dim3 threads(THREADS, THREADS);
-    dim3 blocks(BLOCKSX, BLOCKSY);
-    
-    set0<<<blocks,threads>>>(d_c, N);
+    dim3 blocks1(BLOCKSY, BLOCKSY);
+    dim3 blocks2(BLOCKSX, BLOCKSY);
+    set0<<<blocks1,threads>>>(d_c, N);
     cudaDeviceSynchronize();
-
-    matrixRedMul<<<blocks, threads>>>(d_a, d_b, d_c, N);
+    
+    matrixRedMul<<<blocks2, threads>>>(d_a, d_b, d_c, N);
 
     cudaMemcpy(matC, d_c, sizeC, cudaMemcpyDeviceToHost);
 
