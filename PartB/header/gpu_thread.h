@@ -46,7 +46,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     int BLOCKSY = (N>>1) / THREADS;
     dim3 threads(THREADS, THREADS);
     dim3 blocks1(BLOCKSY, BLOCKSY);
-    dim3 blocks2(BLOCKSX, BLOCKX);
+    dim3 blocks2(BLOCKSX, BLOCKSX);
     set0<<<blocks1,threads>>>(d_c, N);
     cudaDeviceSynchronize();
     
