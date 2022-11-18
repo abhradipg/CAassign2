@@ -48,7 +48,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     dim3 blocks(BLOCKS, BLOCKS);
     
     set0<<<blocks,threads>>>(d_c, N);
-    //cudaDeviceSynchronize()
+    cudaDeviceSynchronize();
 
     matrixRedMul<<<blocks, threads>>>(d_a, d_b, d_c, N);
 
