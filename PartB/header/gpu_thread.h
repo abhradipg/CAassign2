@@ -6,11 +6,11 @@ __global__ void matrixRedMul(const int *a, const int *b, int *c, int N) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     int temp=0;
-    c[(row * N)<<2 + col<<1] = 0;
+    c[(row * N)>>2 + col>>1] = 0;
     for (int iter = 0; iter < N; iter++) {
        temp += a[row * N + iter] * b[iter * N + col];
     }
-    c[(row * N)<<2 + col<<1]+=temp;
+    c[(row * N)>>2 + col>>1]+=temp;
 
 }
 
