@@ -8,11 +8,12 @@ __global__ void matrixRedMul(const int *a, const int *b, int *c, int N) {
     int row=rowC<<1;
     int col=colC<<1;
     int temp=0;
-    for (int iter = 0; iter < N; iter++) {
-       temp += a[row * N + iter] * b[iter * N + col];
-       temp += a[(row+1) * N + iter] * b[iter * N + col];
-       temp += a[row * N + iter] * b[iter * N + (col+1)];
-       temp += a[(row+1) * N + iter] * b[iter * N + (col+1)];
+    for (int iter = 0; iter < N; iter+=4) {
+       int2 b_temp = reinterpret_cast<int2*>(&b[iter * N + col])[0];
+       temp += a[row * N + iter] * b_temp.x;
+       temp += a[row * N + iter] * b_temp.y;
+       temp += a[(row+1) * N + iter] * b_temp.x;
+       temp += a[(row+1) * N + iter] * b_temp.y;
     }
     c[rowC*(N>>1) + colC]+=temp;
 
