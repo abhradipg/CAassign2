@@ -3,15 +3,17 @@
 // Create other necessary functions here
 
 __global__ void matrixRedMul(const int *a, const int *b, int *c, int N) {
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
-    int temp=0;
-    if((threadIdx.x&1==0)&&(threadIdx.y&1==0))
-       c[(row * N)>>2 + col>>1] = 0;
-    for (int iter = 0; iter < N; iter++) {
+    int rowC = blockIdx.y * blockDim.y + threadIdx.y;
+    int colC = blockIdx.x * blockDim.x + threadIdx.x;
+    int row=rowC<<1;
+    int col=colC<<1;
+    for (int iter = 0; iter < (N>>1); iter++) {
        temp += a[row * N + iter] * b[iter * N + col];
+       temp += a[(row+1) * N + iter] * b[iter * N + col];
+       temp += a[row * N + iter] * b[(iter+1) * N + col];
+       temp += a[(row+1) * N + iter] * b[(iter+1) * N + col];
     }
-    c[(row * N)>>2 + col>>1]+=temp;
+    c[rowC*(N>>1) + colC]+=temp;
 
 }
 
@@ -30,7 +32,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaMemcpy(d_b, matB, sizeA, cudaMemcpyHostToDevice);
 
     int THREADS = 32;
-    int BLOCKS = N / THREADS;
+    int BLOCKS = (N>>1) / THREADS;
 
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS, BLOCKS);
