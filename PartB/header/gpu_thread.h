@@ -1,6 +1,6 @@
 #include <vector>
 
-// Shared memory size 32*32*2
+// Shared memory size 32*32*4
 const int SHMEM_SIZE = 32*32*4;
 
 // Create other necessary functions here
@@ -17,19 +17,20 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int temp=0;
     int blockx=blockDim.x*2;
     for (int i = 0; i < N>>1; i += blockDim.x) {
-        /*
-          s_a[threadIdx.y * blockDim.x + threadIdx.x] = a[row * N + i + threadIdx.x];
-          s_b[threadIdx.y * blockDim.x + threadIdx.x] = b[i * N + threadIdx.y * N + col];
-        */
         
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a[row * N + (i*2) + (threadIdx.x*2)];
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a[row * N + (i*2) + (threadIdx.x*2) + 1];
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a[(row+1) * N + (i*2) + (threadIdx.x*2)];
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a[(row+1) * N + (i*2) + (threadIdx.x*2) + 1];
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b[(i*2) * N + (threadIdx.y * 2) * N + col];
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b[(i*2) * N + (threadIdx.y * 2) * N + col + 1];
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col];
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col + 1];
+        int2 b_temp1 = reinterpret_cast<int2*>(&b[(i*2) * N + (threadIdx.y * 2) * N + col])[0];
+        int2 b_temp2 = reinterpret_cast<int2*>(&b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col])[0];
+        int2 a_temp1 = reinterpret_cast<int2*>(&a[row * N + (i*2) + (threadIdx.x*2)])[0];
+        int2 a_temp2 = reinterpret_cast<int2*>(&a[(row+1) * N + (i*2) + (threadIdx.x*2)])[0];
+
+        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a_temp1.x;
+        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a_temp1.y;
+        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a_temp2.x;
+        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a_temp2.y;
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b_temp1.x;
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b_temp1.y;
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b_temp2.x;
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b_temp2.y;
 
     __syncthreads();
 
@@ -47,17 +48,6 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     c[rowC*(N>>1) + colC]+=temp;
 
 }
-/*    int temp=0;
-    for (int iter = 0; iter < N; iter++) {
-       temp += a[row * N + iter] * b[iter * N + col];
-       temp += a[row * N + iter] * b[iter * N + col+1];
-       temp += a[(row+1) * N + iter] * b[iter * N + col];
-       temp += a[(row+1) * N + iter] * b[iter * N + col+1];
-    }
-    c[rowC*(N>>1) + colC]+=temp;
-
-}*/
-
 
 // Fill in this function
 void gpuThread(int N, int *matA, int *matB, int *matC)
@@ -88,7 +78,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaFree(d_c);
 }
 
-/* ijk improv
+/* ijk
 __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int rowC = blockIdx.y * blockDim.y + threadIdx.y;
     int colC = blockIdx.x * blockDim.x + threadIdx.x;
@@ -96,7 +86,7 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int col=colC<<1;
     int temp=0;
     for (int iter = 0; iter < N; iter++) {
-    temp += a[row * N + iter] * b[iter * N + col];
+       temp += a[row * N + iter] * b[iter * N + col];
        temp += a[row * N + iter] * b[iter * N + col+1];
        temp += a[(row+1) * N + iter] * b[iter * N + col];
        temp += a[(row+1) * N + iter] * b[iter * N + col+1];
@@ -147,49 +137,3 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     c[rowC*(N>>1) + colC]+=temp;
 
 }*/
-
-/*
-__global__ void matrixRedMul(int *a, int *b, int *c, int N) {
-    int rowC = blockIdx.y * blockDim.y + threadIdx.y;
-    int colC = blockIdx.x * blockDim.x + threadIdx.x;
-    int row=rowC<<1;
-    int col=colC<<1;
-    
-    __shared__ int s_a[SHMEM_SIZE];
-    __shared__ int s_b[SHMEM_SIZE];
-
-    int temp=0;
-    int blockx=blockDim.x*2;
-    for (int i = 0; i < N>>1; i += blockDim.x) {
-        
-        int2 b_temp1 = reinterpret_cast<int2*>(&b[(i*2) * N + (threadIdx.y * 2) * N + col])[0];
-        int2 b_temp2 = reinterpret_cast<int2*>(&b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col])[0];
-        int2 a_temp1 = reinterpret_cast<int2*>(&a[row * N + (i*2) + (threadIdx.x*2)])[0];
-        int2 a_temp2 = reinterpret_cast<int2*>(&a[(row+1) * N + (i*2) + (threadIdx.x*2)])[0];
-
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a_temp1.x;
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a_temp1.y;
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a_temp2.x;
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a_temp2.y;
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b_temp1.x;
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b_temp1.y;
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b_temp2.x;
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b_temp2.y;
-
-    __syncthreads();
-
-    // Do matrix multiplication on the small matrix
-    for (int iter = 0; iter < blockx; iter++) {
-      temp  +=s_a[(threadIdx.y * 2) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x];
-      temp  +=s_a[(threadIdx.y * 2) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x+1];
-      temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x];
-      temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x+1];
-    }
-    // Wait for all threads to finish using current tiles before loading in new
-    // ones
-    __syncthreads();
-  }
-    c[rowC*(N>>1) + colC]+=temp;
-
-}
-*/
