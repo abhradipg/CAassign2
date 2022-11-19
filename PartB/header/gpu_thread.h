@@ -25,7 +25,7 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
         int2 b_temp1 = reinterpret_cast<int2*>(&b[(i*2) * N + (threadIdx.y * 2) * N + col])[0];
         int2 b_temp2 = reinterpret_cast<int2*>(&b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col])[0];
         int2 a_temp1 = reinterpret_cast<int2*>(&a[row * N + (i*2) + (threadIdx.x*2)])[0];
-        int2 a_temp2 = reinterpret_cast<int2*>(&a[(row+1) * N + (i*2) + (threadIdx.x*2)][0];
+        int2 a_temp2 = reinterpret_cast<int2*>(&a[(row+1) * N + (i*2) + (threadIdx.x*2)])[0];
 
         s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a_temp1.x;
         s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a_temp1.y;
