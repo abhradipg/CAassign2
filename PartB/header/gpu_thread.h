@@ -8,11 +8,36 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int row=rowC<<1;
     int col=colC<<1;
     int temp=0;
-    for (int iter = 0; iter < N; iter++) {
-       temp += a[row * N + iter] * b[iter * N + col];
-       temp += a[row * N + iter] * b[iter * N + col+1];
-       temp += a[(row+1) * N + iter] * b[iter * N + col];
-       temp += a[(row+1) * N + iter] * b[iter * N + col+1];
+    //unroll loop 4 times
+    for (int iter = 0; iter < N; iter+=4) {
+       int2 b_temp1 = reinterpret_cast<int2*>(&b[iter * N + col])[0];
+       int2 b_temp2 = reinterpret_cast<int2*>(&b[(iter+1) * N + col])[0];
+       int2 b_temp3 = reinterpret_cast<int2*>(&b[(iter+2) * N + col])[0];
+       int2 b_temp4 = reinterpret_cast<int2*>(&b[(iter+3) * N + col])[0];
+
+       int4 a_temp1 = reinterpret_cast<int4*>(&a[row * N + iter])[0];
+       int4 a_temp2 = reinterpret_cast<int4*>(&a[(row+1) *N + iter])[0];
+
+       temp += a_temp1.x * b_temp1.x;
+       temp += a_temp1.x * b_temp1.y;
+       temp += a_temp2.x * b_temp1.x;
+       temp += a_temp2.x * b_temp1.y;
+
+       temp += a_temp1.y * b_temp2.x;
+       temp += a_temp1.y * b_temp2.y;
+       temp += a_temp2.y * b_temp2.x;
+       temp += a_temp2.y * b_temp2.y;
+
+       temp += a_temp1.z * b_temp3.x;
+       temp += a_temp1.z * b_temp3.y;
+       temp += a_temp2.z * b_temp3.x;
+       temp += a_temp2.z * b_temp3.y;
+
+       temp += a_temp1.w * b_temp4.x;
+       temp += a_temp1.w * b_temp4.y;
+       temp += a_temp2.w * b_temp4.x;
+       temp += a_temp2.w * b_temp4.y;
+
     }
     c[rowC*(N>>1) + colC]+=temp;
 
