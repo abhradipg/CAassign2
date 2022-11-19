@@ -2,30 +2,23 @@
 
 // Create other necessary functions here
 
-__global__ void set0(int *c, int N){
-  int rowC = blockIdx.y * blockDim.y + threadIdx.y;
-  int colC = blockIdx.x * blockDim.x + threadIdx.x;
-  c[rowC*(N>>1) + colC]=0;
-}
-
 __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int iter = blockIdx.x * blockDim.x + threadIdx.x;
-    int rowC=row>>1;
-    int a1=a[row * N + iter];
-    int a2=a[(row+1) *N + iter];
-    int temp;
-    for (int col = 0, colC=0; col < N; col+=2,colC++) {
-        int2 b_temp1 = reinterpret_cast<int2*>(&b[iter * N + col])[0];
-        temp=a1*b_temp1.x;
-        temp+=a1*b_temp1.y;
-        temp+=a2*b_temp1.x;
-        temp+=a2*b_temp1.y;
-        
-        c[rowC*(N>>1) + colC]+=temp;
+    int rowC = blockIdx.y * blockDim.y + threadIdx.y;
+    int colC = blockIdx.x * blockDim.x + threadIdx.x;
+    int row=rowC<<1;
+    int col=colC<<1;
+    int temp=0;
+    for (int iter = 0; iter < N; iter++) {
+       int2 b_temp = reinterpret_cast<int2*>(&b[iter * N + col])[0];
+       temp += a[row * N + iter] * b[iter * N + col];
+       temp += a[row * N + iter] * b[iter * N + col+1];
+       temp += a[(row+1) * N + iter] * b[iter * N + col];
+       temp += a[(row+1) * N + iter] * b[iter * N + col+1];
     }
+    c[rowC*(N>>1) + colC]+=temp;
 
 }
+
 
 // Fill in this function
 void gpuThread(int N, int *matA, int *matB, int *matC)
@@ -42,13 +35,10 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaMemcpy(d_b, matB, sizeA, cudaMemcpyHostToDevice);
 
     int THREADS = 32;
-    int BLOCKSX = (N) / THREADS;
-    int BLOCKSY = (N>>1) / THREADS;
+    int BLOCKS = (N>>1) / THREADS;
+
     dim3 threads(THREADS, THREADS);
-    dim3 blocks1(BLOCKSY, BLOCKSY);
-    dim3 blocks2(BLOCKSX, BLOCKSX);
-    set0<<<blocks1,threads>>>(d_c, N);
-    cudaDeviceSynchronize();
+    dim3 blocks(BLOCKS, BLOCKS);
     
     matrixRedMul<<<blocks2, threads>>>(d_a, d_b, d_c, N);
 
