@@ -22,14 +22,19 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
           s_b[threadIdx.y * blockDim.x + threadIdx.x] = b[i * N + threadIdx.y * N + col];
         */
         
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a[row * N + (i*2) + (threadIdx.x*2)];
-        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a[row * N + (i*2) + (threadIdx.x*2) + 1];
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a[(row+1) * N + (i*2) + (threadIdx.x*2)];
-        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a[(row+1) * N + (i*2) + (threadIdx.x*2) + 1];
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b[(i*2) * N + (threadIdx.y * 2) * N + col];
-        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b[(i*2) * N + (threadIdx.y * 2) * N + col + 1];
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col];
-        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col + 1];
+        int2 b_temp1 = reinterpret_cast<int2*>(&b[(i*2) * N + (threadIdx.y * 2) * N + col])[0];
+        int2 b_temp2 = reinterpret_cast<int2*>(&b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col])[0];
+        int2 a_temp1 = reinterpret_cast<int2*>(&a[row * N + (i*2) + (threadIdx.x*2)])[0];
+        int2 a_temp2 = reinterpret_cast<int2*>(&a[(row+1) * N + (i*2) + (threadIdx.x*2)][0];
+
+        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2)] = a_temp1.x;
+        s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a_temp1.y;
+        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a_temp2.x;
+        s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a_temp2.y;
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b_temp1.x;
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b_temp1.y;
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b_temp2.x;
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b_temp2.y;
 
     __syncthreads();
 
@@ -96,11 +101,11 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int col=colC<<1;
     int temp=0;
     for (int iter = 0; iter < N; iter++) {
-       int2 b_temp = reinterpret_cast<int2*>(&b[iter * N + col])[0];
-       temp += a[row * N + iter] * b_temp.x;
-       temp += a[row * N + iter] * b_temp.y;
-       temp += a[(row+1) * N + iter] * b_temp.x;
-       temp += a[(row+1) * N + iter] * b_temp.y;
+       temp += a[row * N + iter] * b[iter * N + col];
+       temp += a[row * N + iter] * b[iter * N + col+1];
+       temp += a[(row+1) * N + iter] * b[iter * N + col];
+       temp += a[(row+1) * N + iter] * b[iter * N + col+1];
+    }
     }
     c[rowC*(N>>1) + colC]+=temp;
 
