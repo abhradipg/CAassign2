@@ -9,7 +9,6 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
     int col=colC<<1;
     int temp=0;
     for (int iter = 0; iter < N; iter++) {
-       int2 b_temp = reinterpret_cast<int2*>(&b[iter * N + col])[0];
        temp += a[row * N + iter] * b[iter * N + col];
        temp += a[row * N + iter] * b[iter * N + col+1];
        temp += a[(row+1) * N + iter] * b[iter * N + col];
@@ -40,7 +39,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS, BLOCKS);
     
-    matrixRedMul<<<blocks2, threads>>>(d_a, d_b, d_c, N);
+    matrixRedMul<<<blocks, threads>>>(d_a, d_b, d_c, N);
 
     cudaMemcpy(matC, d_c, sizeC, cudaMemcpyDeviceToHost);
 
