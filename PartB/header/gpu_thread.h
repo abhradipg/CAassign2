@@ -1,7 +1,7 @@
 #include <vector>
 
 // Shared memory size 32*32*2
-const int SHMEM_SIZE = 1 << 11;
+const int SHMEM_SIZE = 32*32*4;
 
 // Create other necessary functions here
 
@@ -26,10 +26,10 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
         s_a[(threadIdx.y * 2) * blockx + (threadIdx.x*2) + 1] = a[row * N + (i*2) + (threadIdx.x*2) + 1];
         s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2)] = a[(row+1) * N + (i*2) + (threadIdx.x*2)];
         s_a[(threadIdx.y * 2 + 1) * blockx + (threadIdx.x*2) + 1] = a[(row+1) * N + (i*2) + (threadIdx.x*2) + 1];
-        s_b[threadIdx.y * 2 * blockx + threadIdx.x] = b[(i*2) * N + (threadIdx.y * 2) * N + col];
-        s_b[threadIdx.y * 2 * blockx + threadIdx.x + 1] = b[(i*2) * N + (threadIdx.y * 2) * N + col + 1];
-        s_b[(threadIdx.y * 2 + 1) * blockx + threadIdx.x] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col];
-        s_b[(threadIdx.y * 2 + 1) * blockx + threadIdx.x + 1] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col + 1];
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x)] = b[(i*2) * N + (threadIdx.y * 2) * N + col];
+        s_b[threadIdx.y * 2 * blockx + (2*threadIdx.x) + 1] = b[(i*2) * N + (threadIdx.y * 2) * N + col + 1];
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x)] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col];
+        s_b[(threadIdx.y * 2 + 1) * blockx + (2*threadIdx.x) + 1] = b[(i*2 + 1) * N + (threadIdx.y * 2) * N + col + 1];
 
     __syncthreads();
 
@@ -40,7 +40,6 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
       temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x];
       temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x+1];
     }
-
     // Wait for all threads to finish using current tiles before loading in new
     // ones
     __syncthreads();
