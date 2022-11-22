@@ -27,7 +27,7 @@ const int SHMEM_SIZE = 32*32*2;
 
        temp += (a_temp1.z+a_temp2.z) * (b_temp3.x+b_temp3.y);
 
-       temp += (a_temp4.w+a_temp4.w) * (b_temp4.x+b_temp4.y);
+       temp += (a_temp1.w+a_temp1.w) * (b_temp4.x+b_temp4.y);
 
     }
     c[rowC*(N>>1) + colC]+=temp;
