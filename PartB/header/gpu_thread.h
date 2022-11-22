@@ -36,7 +36,7 @@ __global__ void matrixRedMul(int *a, int *b, int *c, int N) {
 
     // Do matrix multiplication on the small matrix
     for (int iter = 0; iter < blockx; iter++) {
-      temp  +=s_a[(threadIdx.y) * blockx + iter] * s_b[iter * blockDim.x + 2*threadIdx.x];
+      temp  +=s_a[(threadIdx.y) * blockx + iter] * s_b[iter * blockDim.x + threadIdx.x];
       //temp  +=s_a[(threadIdx.y * 2) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x+1];
       //temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x];
       //temp  +=s_a[(threadIdx.y * 2 + 1) * blockx + iter] * s_b[iter * blockx + 2*threadIdx.x+1];
