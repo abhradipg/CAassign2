@@ -57,7 +57,7 @@ void gpuThread(int N, int *matA, int *matB, int *matC)
     cudaMemcpy(d_b, matB, sizeA, cudaMemcpyHostToDevice);
 
     int THREADS = 32;
-    int BLOCKS = (N>>2) / THREADS;
+    int BLOCKS = (N>>1) / THREADS;
 
     dim3 threads(THREADS, THREADS);
     dim3 blocks(BLOCKS, BLOCKS);
