@@ -13,6 +13,8 @@ const int SHMEM_SIZE = 32*32*2;
     
     __shared__ int s_a[SHMEM_SIZE];
     __shared__ int s_b[SHMEM_SIZE];
+    
+    if( row>=N || col >=N ) return;
 
     int temp=0;
     int blockx=blockDim.x*2;
