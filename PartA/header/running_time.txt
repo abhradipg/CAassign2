@@ -1,65 +1,4 @@
-V1-
-Input matrix of size 4096
-Reference execution time: 608419 ms
-Single thread execution time: 45970.5 ms
-Mismatch at 0
-
-Input matrix of size 16
-Reference execution time: 0.031 ms
-Single thread execution time: 0.016 ms
-Mismatch at 0
-
-Input matrix of size 512
-Reference execution time: 345.659 ms
-Single thread execution time: 88.303 ms
-Mismatch at 0
-
-Input matrix of size 1024
-Reference execution time: 2948.72 ms
-Single thread execution time: 702.264 ms
-Mismatch at 0
-
-V2-
-Input matrix of size 1024
-Reference execution time: 2941.17 ms
-Single thread execution time: 610.053 ms
-Multi-threaded execution time: 0 ms
-Mismatch at 0
-
-Input matrix of size 4096
-Reference execution time: 656349 ms
-Single thread execution time: 39958.3 ms
-Multi-threaded execution time: 0 ms
-Mismatch at 0
-
-
-
-
-
-./rmm data/input_16.in
-Input matrix of size 16
-Reference execution time: 0.028 ms
-Single thread execution time: 0.009 ms
-Multi-threaded execution time: 0.39 ms
-./rmm data/input_1024.in
-Input matrix of size 1024
-Reference execution time: 2879.6 ms
-Single thread execution time: 564.564 ms
-Multi-threaded execution time: 131.433 ms
-./rmm data/input_4096.in
-Input matrix of size 4096
-Reference execution time: 521788 ms
-Single thread execution time: 36866.4 ms
-Multi-threaded execution time: 6759.17 ms
-./rmm data/input_8192.in
-Input matrix of size 8192
-Reference execution time: 6.19741e+06 ms
-Single thread execution time: 295884 ms
-Multi-threaded execution time: 61990.7 ms
-
-
-
-
+Optimization 1 -
 ./rmm data/input_16.in
 Input matrix of size 16
 Reference execution time: 0.028 ms
@@ -105,10 +44,9 @@ Multi-threaded 12 execution time: 399737 ms
 Multi-threaded 16 execution time: 387698 ms
 Multi-threaded 24 execution time: 392799 ms
 
-
+Optimization 2 -
 ./rmm data/input_16.in
 Input matrix of size 16
-Reference execution time: 0.007 ms
 Single thread execution time: 0.006 ms
 Multi-threaded 8 execution time: 0.474 ms
 Multi-threaded 12 execution time: 0.028 ms
@@ -117,7 +55,6 @@ Multi-threaded 24 execution time: 0.028 ms
 Multi-threaded 32 execution time: 0.028 ms
 ./rmm data/input_1024.in
 Input matrix of size 1024
-Reference execution time: 368.56 ms
 Single thread execution time: 369.432 ms
 Multi-threaded 8 execution time: 86.547 ms
 Multi-threaded 12 execution time: 63.097 ms
@@ -126,7 +63,6 @@ Multi-threaded 24 execution time: 63.134 ms
 Multi-threaded 32 execution time: 61.501 ms
 ./rmm data/input_4096.in
 Input matrix of size 4096
-Reference execution time: 24438.8 ms
 Single thread execution time: 24211.8 ms
 Multi-threaded 8 execution time: 4636.17 ms
 Multi-threaded 12 execution time: 3902.1 ms
@@ -135,7 +71,6 @@ Multi-threaded 24 execution time: 4290.61 ms
 Multi-threaded 32 execution time: 4533.84 ms
 ./rmm data/input_8192.in
 Input matrix of size 8192
-Reference execution time: 194550 ms
 Single thread execution time: 194634 ms
 Multi-threaded 8 execution time: 36816.4 ms
 Multi-threaded 12 execution time: 30256.5 ms
@@ -144,11 +79,110 @@ Multi-threaded 24 execution time: 38948.9 ms
 Multi-threaded 32 execution time: 44434.4 ms
 ./rmm data/input_16384.in
 Input matrix of size 16384
-Reference execution time: 1.56831e+06 ms
 Single thread execution time: 1.56757e+06 ms
 Multi-threaded 8 execution time: 297941 ms
 Multi-threaded 12 execution time: 245417 ms
 Multi-threaded 16 execution time: 374190 ms
 Multi-threaded 24 execution time: 367352 ms
 Multi-threaded 32 execution time: 379779 ms
+
+Optimization 3 -
+./rmm data/input_16.in
+Input matrix of size 16
+Single thread execution time: 0.005 ms
+Multi-threaded 8 execution time: 0.62 ms
+Multi-threaded 12 execution time: 0.026 ms
+Multi-threaded 16 execution time: 0.025 ms
+Multi-threaded 24 execution time: 0.027 ms
+Multi-threaded 32 execution time: 0.028 ms
+./rmm data/input_1024.in
+Input matrix of size 1024
+Single thread execution time: 250.275 ms
+Multi-threaded 8 execution time: 59.685 ms
+Multi-threaded 12 execution time: 43.081 ms
+Multi-threaded 16 execution time: 51.333 ms
+Multi-threaded 24 execution time: 49.146 ms
+Multi-threaded 32 execution time: 43.596 ms
+./rmm data/input_4096.in
+Input matrix of size 4096
+Single thread execution time: 16442.2 ms
+Multi-threaded 8 execution time: 3040.37 ms
+Multi-threaded 12 execution time: 2531.4 ms
+Multi-threaded 16 execution time: 3111.96 ms
+Multi-threaded 24 execution time: 3562.59 ms
+Multi-threaded 32 execution time: 4022.66 ms
+./rmm data/input_8192.in
+Input matrix of size 8192
+Single thread execution time: 132253 ms
+Multi-threaded 8 execution time: 26836.1 ms
+Multi-threaded 12 execution time: 19696.4 ms
+Multi-threaded 16 execution time: 36256.1 ms
+Multi-threaded 24 execution time: 36014.9 ms
+Multi-threaded 32 execution time: 43771.2 ms
+./rmm data/input_16384.in
+Input matrix of size 16384
+Single thread execution time: 1.0656e+06 ms
+Multi-threaded 8 execution time: 201361 ms
+Multi-threaded 12 execution time: 163402 ms
+Multi-threaded 16 execution time: 370185 ms
+Multi-threaded 24 execution time: 366321 ms
+Multi-threaded 32 execution time: 377845 ms
+
+Optimization 4 -
+./rmm data/input_16.in
+Input matrix of size 16
+Single thread execution time: 0.004 ms
+Multi-threaded 8 execution time: 0.627 ms
+Multi-threaded 12 execution time: 0.016 ms
+Multi-threaded 16 execution time: 0.016 ms
+Multi-threaded 24 execution time: 0.016 ms
+Multi-threaded 32 execution time: 0.016 ms
+./rmm data/input_1024.in
+Input matrix of size 1024
+Single thread execution time: 180.356 ms
+Multi-threaded 8 execution time: 43.844 ms
+Multi-threaded 12 execution time: 34.893 ms
+Multi-threaded 16 execution time: 42.128 ms
+Multi-threaded 24 execution time: 34.806 ms
+Multi-threaded 32 execution time: 32.353 ms
+./rmm data/input_4096.in
+Input matrix of size 4096
+Single thread execution time: 11817.2 ms
+Multi-threaded 8 execution time: 2255.44 ms
+Multi-threaded 12 execution time: 2021.04 ms
+Multi-threaded 16 execution time: 2073.06 ms
+Multi-threaded 24 execution time: 2103.43 ms
+Multi-threaded 32 execution time: 2383.77 ms
+./rmm data/input_8192.in
+Input matrix of size 8192
+Single thread execution time: 93099.2 ms
+Multi-threaded 8 execution time: 17397.1 ms
+Multi-threaded 12 execution time: 15326.3 ms
+Multi-threaded 16 execution time: 18555 ms
+Multi-threaded 24 execution time: 21207 ms
+Multi-threaded 32 execution time: 31778.6 ms
+./rmm data/input_16384.in
+Input matrix of size 16384
+Single thread execution time: 785192 ms
+Multi-threaded 8 execution time: 153426 ms
+Multi-threaded 12 execution time: 138973 ms
+Multi-threaded 16 execution time: 252702 ms
+Multi-threaded 24 execution time: 256041 ms
+Multi-threaded 32 execution time: 305582 ms
+
+Optimization 5 -
+Input matrix of size 16
+Single thread execution time: 0.001 ms
+./rmm data/input_1024.in
+Input matrix of size 1024
+Single thread execution time: 217.119 ms
+./rmm data/input_4096.in
+Input matrix of size 4096
+Single thread execution time: 21516 ms
+./rmm data/input_8192.in
+Input matrix of size 8192
+Single thread execution time: 191547 ms
+./rmm data/input_16384.in
+Input matrix of size 16384
+Single thread execution time: 1.69764e+06 ms
 
